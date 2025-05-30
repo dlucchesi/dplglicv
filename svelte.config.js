@@ -14,6 +14,7 @@ const config = {
 		alias: {
 				"@/lib/*": "./src/lib/*",
 				"@/components/*": "./src/lib/components/*",
+				"@/*": "./src/lib/*",
 		},
 		adapter: adapter(),
 		
