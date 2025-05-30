@@ -8,6 +8,7 @@ export default defineConfig({
 	server: {
 		port: 5100,
 	},
+	publicDir: 'static',
 	test: {
 		workspace: [
 			{
