@@ -1,6 +1,7 @@
 <script>
-import DplButton from "@/lib/components/DplButton.svelte";
-import DplDataPicker from "@/lib/components/DplDataPicker.svelte";
+  import DplButton from "@/lib/components/DplButton.svelte";
+  import DplDataPicker from "@/lib/components/DplDataPicker.svelte";
+	import ChartTest from "@/lib/components/ChartTest.svelte";
 
 </script>
 
@@ -58,7 +59,7 @@ import DplDataPicker from "@/lib/components/DplDataPicker.svelte";
 
 <!-- div com conteudo centralizado para receber o gráfico -->
   <div class="flex justify-center items-center">
-    <img src="/images/weight_chart.png" alt="Weight Chart" class="w-full max-w-2xl">
+    <ChartTest />
   </div>
   
 

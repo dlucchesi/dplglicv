@@ -272,3 +272,8 @@ button:focus:not(:focus-visible) {
     @apply bg-background text-foreground;
   }
 }
+
+ .chart-container {
+       width: 100%; /* Or a specific pixel value, e.g., 500px */
+       height: 300px; /*  Set height as well for better rendering */
+   }
