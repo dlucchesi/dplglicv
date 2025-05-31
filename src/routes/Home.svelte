@@ -1,8 +1,7 @@
 <script>
-	import MyButton from "$lib/components/MyButton.svelte";
-	import MyCalendar from "$lib/components/MyCalendar.svelte";
 
 </script>
+
 <div class="container mx-auto">
   <h1>Welcome DPL Glic</h1>
   <p class="mb-4">This is a simple Svelte application to track your weight and glucose levels.</p>

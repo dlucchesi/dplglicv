@@ -118,7 +118,7 @@ p {
 }
 
 h1 {
-  color: indigo;
+  color: var(--color-amber-400);
 }
 
 p {

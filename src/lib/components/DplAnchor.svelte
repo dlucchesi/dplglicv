@@ -4,15 +4,16 @@
 
   type Props = {
     href?: string;
+    addClass?: string;
     children?: Snippet;
   } & HTMLAttributes<HTMLAnchorElement>
 
-  let {children, ... restProps}: Props = $props()
+  let {children, addClass, ... restProps}: Props = $props()
 
 </script>
 
 <a {...restProps}
-    class="bg-green-700 flex-1/2 background-gray-900 text-white px-3 py-2  text-sm font-medium hover:bg-gray-700 rounded-xl">
+    class="bg-green-700 flex-1/2 background-gray-900 text-white px-3 py-2  text-sm font-medium hover:bg-gray-700 rounded-xl {addClass ? addClass : ''}">
   {#if children}
     {@render children()}
   {:else}

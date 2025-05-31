@@ -22,6 +22,8 @@
     { value: 3, label: "In 3 days" },
     { value: 7, label: "In a week" }
   ];
+
+ let dt = df.format(new Date());
 </script>
  
 <Popover.Root openFocus>
@@ -35,10 +37,10 @@
    builders={[builder]}
   >
    <CalendarIcon class="mr-2 h-4 w-4" />
-   {value ? df.format(value.toDate(getLocalTimeZone())) : "Select a date"}
+   {value ? df.format(value.toDate(getLocalTimeZone())) : dt}
   </Button>
  </Popover.Trigger>
- <Popover.Content class="w-auto p-0">
+ <Popover.Content class="w-auto p-0 bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:text-yellow-500 cursor-pointer">
   <Calendar bind:value initialFocus />
  </Popover.Content>
 </Popover.Root>
