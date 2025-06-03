@@ -1,29 +1,29 @@
 <script lang="ts">
- import CalendarIcon from "lucide-svelte/icons/calendar";
- import {
-  type DateValue,
-  DateFormatter,
-  getLocalTimeZone,
- } from "@internationalized/date";
- import { cn } from "$lib/utils.js";
- import { Button } from "$lib/components/ui/button";
- import { Calendar } from "$lib/components/ui/calendar";
- import * as Popover from "$lib/components/ui/popover";
- 
- const df = new DateFormatter("pt-BR", {
-  dateStyle: "short",
- });
- 
- let value: DateValue | undefined = undefined;
+  import CalendarIcon from "lucide-svelte/icons/calendar";
+  import {
+    type DateValue,
+    DateFormatter,
+    getLocalTimeZone,
+  } from "@internationalized/date";
+  import { cn } from "$lib/utils.js";
+  import { Button } from "$lib/components/ui/button";
+  import { Calendar } from "$lib/components/ui/calendar";
+  import * as Popover from "$lib/components/ui/popover";
+  import type { Snippet } from "svelte";
+  import type { HTMLAttributes } from "svelte/elements";
 
- const items = [
-    { value: 0, label: "Today" },
-    { value: 1, label: "Tomorrow" },
-    { value: 3, label: "In 3 days" },
-    { value: 7, label: "In a week" }
-  ];
+    type Props = {
+      children?: Snippet;
+      name?: string;
+    } & HTMLAttributes<HTMLInputElement>;
 
- let dt = df.format(new Date());
+  let {children, name, value, ...restProps}: Props & { value?: DateValue } = $props();
+
+  const df = new DateFormatter("pt-BR", {
+    dateStyle: "short",
+  });
+
+  let dt = df.format(new Date());
 </script>
  
 <Popover.Root openFocus>

@@ -1,24 +1,47 @@
-<script>
-  import DplButton from "@/lib/components/DplButton.svelte";
-  import DplDataPicker from "@/lib/components/DplDataPicker.svelte";
-	import ChartTest from "@/lib/components/ChartTest.svelte";
+<script lang="ts">
+  import { enhance } from '$app/forms';
+  import DplButton from "@/lib/components/DplButton.svelte"
+  import type { PageData } from './$types';
+	import ChartTest from "@/lib/components/ChartTest.svelte"
+	import {
+    type DateValue,
+    DateFormatter,
+    getLocalTimeZone,
+  } from "@internationalized/date"
+	import { console } from 'inspector/promises';
 
+  const df = new DateFormatter("pt-BR", {
+    dateStyle: "short",
+  });
+
+  let dt = df.format(new Date());
+  let entry = 0
+
+  let formData: FormData | null = null;
+
+  export let data: PageData;
+  
 </script>
 
 
 <div class="container mx-auto">
   <h1>Weight Control Center</h1>
   
-  <form
+  <form use:enhance
     class="w-full max-w-2xl mx-auto items-center"
-    method="post"
-    action="http://localhost:8000/insert_weight">
+    method="POST"
+    action="?/insertWeight">
     <div class="flex flex-wrap -mx-3 mb-6">
       <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
           Date
         </label>
-        <DplDataPicker />
+        <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+            bind:value={dt}
+            name="date" 
+            type="date" 
+            pattern="\d{4}//\d{2}//\d{4}"
+            required>
         <p class="text-red-500 text-xs italic">Please fill out this field.</p>
       </div>
       <div class="w-full md:w-1/2 px-3">
@@ -26,7 +49,8 @@
           value
         </label>
         <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
-            id="grid-last-name" 
+            bind:value={entry}
+            name="weight" 
             type="text" placeholder="0.0" pattern="[0-9]+([,\.][0-9]+)?" required>
       </div>
     </div>
@@ -59,7 +83,7 @@
 
 <!-- div com conteudo centralizado para receber o gráfico -->
   <div class="flex justify-center items-center">
-    <ChartTest />
+    <ChartTest x="date" y="weight" chartData={data.csv} />
   </div>
   
 
