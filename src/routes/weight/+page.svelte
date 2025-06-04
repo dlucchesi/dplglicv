@@ -5,6 +5,8 @@
     DateFormatter,
     getLocalTimeZone,
   } from "@internationalized/date"
+  import type { PageData } from './$types';
+	import AreaChart from '$lib/components/AreaChart.svelte';
 
   const df = new DateFormatter("pt-BR", {
     dateStyle: "short",
@@ -14,6 +16,19 @@
   let entry = 0
 
   let formData: FormData | null = null;
+
+  export let data: PageData;
+
+  let y: string[] = [];
+  let x: number[] = [];
+
+  // limit 3 
+
+  let weights = data.weightData
+  let graph = weights?.map((w: { year: number; month: number; day: number; weight: number }) => {
+    return {x: `${w.year}-${w.month}-${w.day}`, 
+           y: w.weight};
+  });
   
 </script>
 
@@ -73,5 +88,9 @@
       </div>
     </div>   
   </form>
+
+  <div class="flex justify-center items-center">
+    <AreaChart {graph} />
+  </div>
 
 </div>
