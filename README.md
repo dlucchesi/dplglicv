@@ -2,8 +2,36 @@
 
   A simple Nodejs + Svelte + Skeleton application
 
+## What do you need to this project...
+An environment file (profile):
+- where?:
+  - project root folder
+- pattern?:
+  - `.env`
+- structure:
+  - `key`=`value`
+- vars need to project:
+  - `DATA_PATH` => path to cvs files (`;` separator)
+  - `COUNT_TO_SHOW` => number of ocurrences to show in graphs
+
+## About glic.csv
+- structure
+  - `year;month;day;hour;minute;glucose;obs`
+- examples
+  - `2025;1;1;9;0;120;Before breakfast`
+  - `2025;12;10;23;55;110;`
+
+## About weight.csv
+- structure
+  - `year;month;day;weight`
+- examples
+  - `2025;1;1;109.90`
+  - `2025;12;10;99`
+
+## About SVELTE
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
+## About SKELETON
 Skeleton is an adaptive design system powered by Tailwind CSS. You can run it with: 
   - React
   - Svelte
@@ -13,7 +41,7 @@ Skeleton is an adaptive design system powered by Tailwind CSS. You can run it wi
   - and more ...
 
 
-## Creating a project
+### Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!
 
@@ -25,7 +53,7 @@ npx sv create
 npx sv create my-app
 ```
 
-## Developing
+### Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
@@ -36,7 +64,7 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+### Building
 
 To create a production version of your app:
 
