@@ -25,7 +25,7 @@ export const load: PageServerLoad = async () => {
     // Convert the parsed data to a more usable format
     const glucData = parsedData.data.map((row: any) => {
       const year = parseInt(row.year, 10);
-      const month = parseInt(row.month, 10); // JS months are 0-indexed
+      const month = parseInt(row.month, 10) - 1;  // JS months are 0-indexed
       const day = parseInt(row.day, 10);
       const hour = parseInt(row.hour, 10);
       const minute = parseInt(row.minute, 10);
@@ -74,7 +74,7 @@ export const actions = {
       return { error: 'Invalid date format. Please use YYYY-MM-DD.' };
     }
     const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10) 
+    const month = parseInt(dateParts[1], 10)
     const day = parseInt(dateParts[2], 10);
 
     // Extract time parts
@@ -99,10 +99,10 @@ export const actions = {
       if (isNaN(glucNumber)) {
         return { error: 'Invalid weight. Please provide a valid number.' };
       }
-      
       const newGlucData = `${String(year)};${String(month)};${String(day)};${String(hour)};${String(minute)};${glucNumber};${obs}\n`;
       await fs.appendFile(filePath, newGlucData);
 
+      // Data will be reloaded after redirect
       return redirect(303, '/glucose'); // Redirect on success
     } catch (error) {
       return { error: 'Submission failed.' };

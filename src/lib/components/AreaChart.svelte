@@ -14,13 +14,15 @@ import type { HTMLAttributes } from "svelte/elements";
 
   let chartObject: Chart | undefined;
 
+  let maxY = Math.max(...graph.map((g) => g.y)) + 50;
+
   const data = graph;
 
-  function changeData() {
-    graph = [];
+  export function Update() {
+    if (chartObject) {
+      chartObject.update();
+    }
   }
-	
-  
 	
   function chart(node: HTMLCanvasElement, data: number[]) {
     function setupChart(_data: number[], ptogression : string[]) {
@@ -44,7 +46,8 @@ import type { HTMLAttributes } from "svelte/elements";
           scales: {
             y: {
               min: 40,
-              max: 200,
+              // max: based on maximum value in data
+              max: maxY
             },
           },
           plugins: {
