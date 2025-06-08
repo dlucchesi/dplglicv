@@ -9,7 +9,7 @@
 	import AreaChart from '$lib/components/AreaChart.svelte';
 	import GlucTable from './GlucTable.svelte';
 
-  const { data } = $props<{ data: PageData }>();
+  const { data, form } = $props<{ data: PageData, form: HTMLFormElement }>();
 
   let currentDateTime: Date = new Date(); // Initialize currentDateTime with the current local time
   let currentTime: string = `${currentDateTime.getHours().toString().padStart(2, '0')}:${currentDateTime.getMinutes().toString().padStart(2, '0')}`; // format time in 24 hour format and 2 digits minutes
@@ -48,7 +48,7 @@
   <form use:enhance data-sveltekit-reload
     class="w-full max-w-2xl mx-auto items-center"
     method="POST"
-    action="?/insertGluc">
+    action="/glucose?/insertGluc">
     <div class="flex flex-wrap -mx-3 mb-6">
       <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="date">
