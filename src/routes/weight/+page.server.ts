@@ -1,7 +1,6 @@
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
-import { Pool } from 'pg';
+import pool from '$lib/server/db'; // Import the shared pool
 import type { Weight } from '$lib/model/weight';
 import {
     type DateValue,
@@ -20,19 +19,10 @@ import { POSTGRES_DB, POSTGRES_USER, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_PASS
 
   export const load: PageServerLoad = async () => {
     try {
-        // Connect to postgres database in 127.0.0.1 database db_dplglic table glucose
-        const pool = new Pool({
-          host: POSTGRES_HOST,
-          database: POSTGRES_DB,
-          user: POSTGRES_USER,
-          password: POSTGRES_PASSWORD,
-          port: Number(POSTGRES_PORT) || 5432, // Default port is 5432
-        });
-    
-        const result = await pool.query('SELECT * FROM weight ORDER BY entry_date');
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM weight ORDER BY entry_date');
         const retData = result.rows;
     
-        await pool.end();
         // convert the rows to Weight type
         const weightData: Weight[] = retData.sort((a, b) => new Date(a.entry_date).getTime() - new Date(b.entry_date).getTime())
         .map(row => ({
@@ -70,24 +60,26 @@ import { POSTGRES_DB, POSTGRES_USER, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_PASS
       console.log('>>>>> Chegou!!!!! ', weightNumber, date, obs);
 
       if (weightNumber && date){
+         
+
         try {
-          const pool = new Pool({
-            host: POSTGRES_HOST,
-            database: POSTGRES_DB,
-            user: POSTGRES_USER,
-            password: POSTGRES_PASSWORD,
-            port: Number(POSTGRES_PORT) || 5432, // Default port is 5432
-          });
-          await pool.query(
-            'INSERT INTO weight (id, entry_date, entry, obs) VALUES (nextval(\'public."weightPk"\'), $1, $2, $3)',
-            [date, weightNumber, obs || null]
-          );
-          await pool.end();
-          // Redirect to the same page to refresh the data
-          return { success: true };
+          const client = await pool.connect();
+          try {
+            await client.query(
+              'INSERT INTO weight (id, entry_date, entry, obs) VALUES (nextval(\'public."weightPk"\'), $1, $2, $3)',
+              [date, weightNumber, obs || null]
+            );
+            // Redirect to the same page to refresh the data
+            return { success: true };
+          } catch (error) {
+            console.error('Error inserting glucose data:', error);
+            return { success: false, error: 'Failed to insert glucose data' };
+          } finally {
+            client.release();
+          }
         } catch (error) {
-          console.error('Error inserting glucose data:', error);
-          return { success: false, error: 'Failed to insert glucose data' };
+          console.error('Error connecting to the database:', error);
+          return { success: false, error: 'Database connection error' };
         }
       } else {
         console.error('Invalid glucose data:', weightNumber, date, obs);
