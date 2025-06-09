@@ -56,8 +56,6 @@ export const actions = {
       glucNumber = Number(glucose);
     }
     
-    console.log('>>>>> Chegou!!!!! ', glucNumber, date, obs);
-
     if (glucNumber && date){
       try {
         const pool = new Pool({

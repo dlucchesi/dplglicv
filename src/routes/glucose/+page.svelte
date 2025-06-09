@@ -89,14 +89,6 @@
       formData.set('entry', formEntry?.toString() || '');
       formData.set('observation', formObs as string);
       
-
-      // Add the new entry to the glucs array
-      // glucs.push({
-      //   entryDate: selectedTime,
-      //   entry: entry,
-      //   observation: obs,
-      // });
-      
       // Call the server to insert the new glucose entry
       fetch('/glucose', {
         method: 'POST',
@@ -161,7 +153,7 @@
             type="text"
             placeholder="0.0" 
             required />
-          {#if entry === undefined || entry === ''}
+          {#if entry === undefined || entry === null || entry === 0}
             <p class="text-red-500 text-xs italic">Please fill out this field.</p>
           {/if}
       </div>

@@ -17,7 +17,6 @@ import type { HTMLAttributes } from "svelte/elements";
   let maxY = Math.max(...graph.map((g) => g.y)) + 50;
 
   const data = graph;
-  console.log("Graph data:", data);
 
   export function Update() {
     if (chartObject) {
