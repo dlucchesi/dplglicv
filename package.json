@@ -26,6 +26,7 @@
 		"@tailwindcss/vite": "^4.0.0",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/svelte": "^5.2.4",
+		"@types/pg": "^8.15.4",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-svelte": "^3.0.0",
@@ -48,6 +49,7 @@
 		"@internationalized/date": "^3.8.1",
 		"@types/papaparse": "^5.3.16",
 		"chart.js": "^4.4.9",
-		"papaparse": "^5.5.3"
+		"papaparse": "^5.5.3",
+		"pg": "^8.16.0"
 	}
 }
