@@ -1,9 +1,4 @@
 <script lang="ts">
-	import {
-    type DateValue,
-    DateFormatter,
-    getLocalTimeZone,
-  } from "@internationalized/date"
   import { Weight } from '$lib/model/weight';
   import type { PageData } from './$types';
 	import AreaChart from '$lib/components/AreaChart.svelte';
@@ -14,7 +9,7 @@
   const countToShow: number = 10; // Default to 10 if not set
 
   let selectedDate: Date = $state(new Date())
-  let entry: Number = $state(0)
+  let entry: number = $state(0)
   let obs: String = $state("")
 
   let formData: FormData | null = null;
