@@ -1,0 +1,20 @@
+services:
+  dbdplglic:
+    image: 'postgres:latest'
+    #    restart: always
+    restart: unless-stopped
+    container_name: dbdplglic
+    hostname: dbdplglic
+    volumes:
+      - D:/data/dpl/glic/db:/var/lib/postgresql/data:rw
+      # script to init load -> create databases
+      - D:/projects/nodejs/dplglicv/script/db/start_postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=usr_dpluser
+      - POSTGRES_PASSWORD=654321
+
+volumes:
+  dbdpluser:
+    driver: local

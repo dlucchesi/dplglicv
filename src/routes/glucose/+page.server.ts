@@ -1,111 +1,78 @@
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
-import Papa from 'papaparse';
-
-import fs from 'fs/promises';
-import path from 'path';
-//  My environment variable for the data path
-import { DATA_PATH } from '$env/static/private';
+import pool from '$lib/server/db'; // Import the shared pool
+import type { Glucose } from '$lib/model/glucose';
 
 export const load: PageServerLoad = async () => {
   try {
-    // Read the CSV file limiting to the last COUNT_TO_SHOW entries
-    const filePath = path.join(DATA_PATH, 'glic.csv');
-    let data = await fs
-      .readFile(filePath, 'utf8')
-      .catch(() => ''); // Handle file not found or empty file
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM glucose ORDER BY entry_date DESC');
+      const retData = result.rows;
 
-    // Parse the CSV data
-    const parsedData = Papa.parse(data, {
-      header: true,
-      delimiter: ';',
-      skipEmptyLines: true,
-    });
-    // Convert the parsed data to a more usable format
-    const glucData = parsedData.data.map((row: any) => {
-      const year = parseInt(row.year, 10);
-      const month = parseInt(row.month, 10) - 1;  // JS months are 0-indexed
-      const day = parseInt(row.day, 10);
-      const hour = parseInt(row.hour, 10);
-      const minute = parseInt(row.minute, 10);
-      const glucose = parseFloat(row.glucose);
-      const obs = row.obs || '';
-      const date = new Date(year, month, day, hour, minute);
-      const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      // convert the rows to Glucose type
+      const glucoseData: Glucose[] = retData.map(row => ({
+        id: row.id,
+        entry: row.entry,
+        entryDate: row.entry_date,
+        obs: row.obs
+      }) as Glucose);
 
-      return {
-        year: year,
-        month: month,
-        day: day,
-        hour: hour,
-        minute: minute,
-        glucose: glucose,
-        obs: obs,
-        date: date,
-        time: time,
-      };
-    }
-    );
-    return {
-      glucData: glucData
+      return { glucoseData: glucoseData };
+    } catch (error) {
+      console.error('Error loading glucose data:', error);
+      return { glucoseData: [] }; // Return an empty array on error
+    } finally {
+      client.release();
     }
   } catch (error) {
-    console.error('Error loading weight data:', error);
-    return { error: 'Failed to load weight data.' };
+    console.error('Error connecting to the database:', error);
+    return { glucoseData: [] }; // Return an empty array on error
   }
 };
 
 export const actions = {
-  insertGluc: async ({ request }) => {
+  default: async ({ request }) => {
+    let glucose: FormDataEntryValue | null = null;
+    let date: FormDataEntryValue | null = null;
+    let obs: FormDataEntryValue | null = null;
+
     const formData = await request.formData();
-    const glucose = formData.get('glucose');
-    const date = formData.get('date');
-    const time = formData.get('time');
-    const obs = formData.get('obs');
+
+    glucose = formData.get('entry');
+    date = formData.get('entryDate');
+    obs = formData.get('observation');
+    
     let glucNumber: number = 0;
 
-    // extract year, month, and day from the date string
-    if (typeof date !== 'string') {
-      return { error: 'Invalid date. Please provide a valid date string.' };
+    if (glucose && !isNaN(Number(glucose))) {
+      glucNumber = Number(glucose);
     }
-    const dateParts = date.split('-');
-    if (dateParts.length !== 3) {
-      return { error: 'Invalid date format. Please use YYYY-MM-DD.' };
-    }
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10)
-    const day = parseInt(dateParts[2], 10);
-
-    // Extract time parts
-    if (typeof time !== 'string') {
-      return { error: 'Invalid time. Please provide a valid time string.' };
-    }
-    const timeParts = time.split(':');
-    if (timeParts.length !== 2) {
-      return { error: 'Invalid time format. Please use HH:MM.' };
-    }
-    const hour = parseInt(timeParts[0], 10);
-    const minute = parseInt(timeParts[1], 10);
-
-    try {
-      // Append the new weight data to the CSV file
-      const filePath = path.join(DATA_PATH, 'glic.csv');
-
-      if (glucose === null) {
-        return { error: 'Weight is required.' };
+    
+    if (glucNumber && date){
+      try {
+        const client = await pool.connect();
+        try {
+          await client.query(
+            'INSERT INTO glucose (id, entry_date, entry, obs) VALUES (nextval(\'public."glucosePk"\'), $1, $2, $3)',
+            [date, glucNumber, obs || null]
+          );
+          // Redirect to the same page to refresh the data
+          return { success: true };
+        } catch (error) {
+          console.error('Error inserting glucose data:', error);
+          return { success: false, error: 'Failed to insert glucose data' };
+        } finally {
+          client.release();
+        }
+      } catch (error) {
+        console.error('Error connecting to the database:', error);
+        return { success: false, error: 'Database connection error' };
       }
-      const glucNumber = Number(glucose);
-      if (isNaN(glucNumber)) {
-        return { error: 'Invalid weight. Please provide a valid number.' };
-      }
-      const newGlucData = `${String(year)};${String(month)};${String(day)};${String(hour)};${String(minute)};${glucNumber};${obs}\n`;
-      await fs.appendFile(filePath, newGlucData);
-
-      // Data will be reloaded after redirect
-      return redirect(303, '/glucose'); // Redirect on success
-    } catch (error) {
-      return { error: 'Submission failed.' };
+    } else {
+      console.error('Invalid glucose data:', glucNumber, date, obs);
+      return { success: false, error: 'Invalid glucose data' };
     }
-  }
+  },
 } satisfies Actions;
+
