@@ -1,20 +1,29 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
 	import {
     type DateValue,
     DateFormatter,
     getLocalTimeZone,
   } from "@internationalized/date"
   import type { PageData } from './$types';
-  import { Label, Input, Datepicker, Timepicker,Textarea } from "flowbite-svelte";
+  import { Label, Input, Datepicker, Timepicker,Textarea, Toggle } from "flowbite-svelte";
 
 	import AreaChart from '$lib/components/AreaChart.svelte';
 	import GlucTable from './GlucTable.svelte';
 	import type { Glucose } from '$lib/model/glucose';
+  // dotenv.config(); // Not needed in SvelteKit client code
+  
+  const entriesCount = 20; // Default to 10 if not set
 
   const { data, form } = $props<{ data: PageData, form: HTMLFormElement }>();
 
-  let dateFormatter = new DateFormatter('pt-BR', {
+  let dateFormatterNoDate = new DateFormatter('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  let dateFormatterDate = new DateFormatter('pt-BR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -22,6 +31,35 @@
   let currentDateTime: Date = new Date(); // Initialize currentDateTime with the current local time
   let currentTime: string = `${currentDateTime.getHours().toString().padStart(2, '0')}:${currentDateTime.getMinutes().toString().padStart(2, '0')}`; // format time in 24 hour format and 2 digits minutes
 
+  let showLastEntries = $state<boolean>(true);
+  $effect(() => {
+    // This effect runs whenever showLastEntries changes
+    // You can put your logic here
+    console.log('showLastEntries changed:', showLastEntries);
+    if (showLastEntries === true) {
+      console.log('Showing last entries');
+
+      // Update the graph data based on the toggle state
+      if (showLastEntries) {
+        graph = entriesChart.map((g: {date: Date; entry: number }) => {
+          return { x: `${dateFormatterDate.format(g.date)}`, y: g.entry };
+        });
+      } else {
+        graph = entriesChart.filter((g: {date: Date; entry: number }) => {
+          const entryDate = g.date;
+          return entryDate.getDate() == currentDateTime.getDate() &&
+            entryDate.getMonth() == currentDateTime.getMonth() &&
+            entryDate.getFullYear() == currentDateTime.getFullYear();
+        }).map((g: {date: Date; entry: number }) => {
+          return { x: `${dateFormatterNoDate.format(g.date)}`, y: g.entry };
+        });
+      } 
+    } else {
+      console.log('Not showing last entries');
+      // Reset the graph data to empty or some default state
+      graph = [];
+    }
+  });
 
   // function load page data
   $effect(() => {
@@ -42,24 +80,26 @@
 
   let glucs = $state(data.glucoseData)
 
-
-
   // filter out today entries 
   let entriesChart = [...glucs].filter((g) => {
-    const entryDate = g.entryDate;
-    const ret = entryDate.getDate() == currentDateTime.getDate() &&
-      entryDate.getMonth() == currentDateTime.getMonth() &&
-      entryDate.getFullYear() == currentDateTime.getFullYear();
-    return ret
+    // if showLastEntries is false, filter out entries that are not today
+    if (!showLastEntries) {
+      const entryDate = g.entryDate;
+      return entryDate.getDate() == currentDateTime.getDate() &&
+        entryDate.getMonth() == currentDateTime.getMonth() &&
+        entryDate.getFullYear() == currentDateTime.getFullYear();
+    } else {
+      return true;
+    }
   }).sort((a: Glucose, b: Glucose) => {
     return a.entryDate.getTime() - b.entryDate.getTime();
   }).map((g: Glucose) => {
     return { date: g.entryDate, entry: g.entry };
   });
-  
+  // limnit the entries to the last `entriesCount` entries
   let graph = entriesChart.map((g: {date: Date; entry: number }) => {
-    return { x: `${dateFormatter.format(g.date)}`, y: g.entry };
-  });
+    return { x: `${dateFormatterDate.format(g.date)}`, y: g.entry };
+  }).slice(-entriesCount);
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -194,6 +234,19 @@
       {/if}
     </div>
   </form>
+
+  <div class="w-full max-w-2xl mx-auto items-center">
+    <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <Label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="date">
+            show other entries
+          </Label>
+        </div>
+        <div class="appearance-none block w-full">
+          <Toggle bind:checked={showLastEntries} />
+        </div>
+    </div>
+  </div>
 
   <div class="flex justify-center items-center">
     <AreaChart {graph} />

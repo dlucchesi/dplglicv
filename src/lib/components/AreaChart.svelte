@@ -14,7 +14,9 @@ import type { HTMLAttributes } from "svelte/elements";
 
   let chartObject: Chart | undefined;
 
-  let maxY = Math.max(...graph.map((g) => g.y)) + 50;
+  let maxY = Math.max(...graph.map((g) => g.y)) + 10;
+
+  let minY = Math.min(...graph.map((g) => g.y)) - 10;
 
   const data = graph;
 
@@ -45,9 +47,9 @@ import type { HTMLAttributes } from "svelte/elements";
           maintainAspectRatio: true,
           scales: {
             y: {
-              min: 40,
-              // max: based on maximum value in data
-              max: maxY
+              min: minY,
+              max: maxY,
+
             },
           },
           plugins: {
@@ -76,6 +78,7 @@ import type { HTMLAttributes } from "svelte/elements";
 </script>
 
 <div>
-  <canvas class="chart w-3xl" use:chart={data}>
+  <canvas class="w-3xl border-2 border-blue-800 rounded-md bg-white shadow-lg
+           mb-6 aspect-video" use:chart={data}>
   </canvas>
 </div>
