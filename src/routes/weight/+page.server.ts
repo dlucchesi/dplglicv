@@ -72,7 +72,7 @@ import { POSTGRES_DB, POSTGRES_USER, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_PASS
             // Redirect to the same page to refresh the data
             return { success: true };
           } catch (error) {
-            console.error('Error inserting glucose data:', error);
+            console.error('Error inserting weight data:', error);
             return { success: false, error: 'Failed to insert glucose data' };
           } finally {
             client.release();
