@@ -77,6 +77,36 @@ pre {
 	color: var(--color-text);
 }
 
+.myButtonBackground {
+	background: linear-gradient(45deg, rgb(196, 4, 255), rgb(0, 174, 255));
+	border-radius: 0.25rem;
+	padding: 0.2rem 1rem;
+	border: none;
+	cursor: pointer;
+}
+.myButtonBackground :hover {
+	box-shadow: 0 0 10px rgba(174, 226, 53, 0.781);
+	color: rgba(196, 4, 255, 0.856);
+	transition: color 0.5s ease-in-out;
+}
+
+.myButtonBackground :not( :hover) {
+	box-shadow: 0 0 10px rgba(174, 226, 53, 0.781);
+	color: white;
+	transition: color 0.5s ease-in-out;
+}
+
+
+.myButtonLayer {
+	color: white;
+	background-color: black;
+	margin: 0.1rem auto;
+	padding: 0.1rem 0.5rem;
+	border-radius: 0.25rem;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
 .text-column {
 	display: flex;
 	max-width: 48rem;
