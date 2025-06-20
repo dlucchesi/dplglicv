@@ -86,9 +86,16 @@ pre {
 }
 .myButtonBackground :hover {
 	box-shadow: 0 0 10px rgba(174, 226, 53, 0.781);
-	color: rgba(155, 255, 213, 0.856);
+	color: rgba(196, 4, 255, 0.856);
 	transition: color 0.5s ease-in-out;
 }
+
+.myButtonBackground :not( :hover) {
+	box-shadow: 0 0 10px rgba(174, 226, 53, 0.781);
+	color: white;
+	transition: color 0.5s ease-in-out;
+}
+
 
 .myButtonLayer {
 	color: white;
